@@ -110,10 +110,10 @@ export default function Example() {
                 </div>
                 <h2 className="text-xs font-semibold text-gray-200 px-4 py-4">
                   {
-                    query === '' && 'Repositories'
+                    query !== '' && 'Repositories'
                   }
                   {
-                    query !== '' && <div className='flex justify-between'>
+                    query === '' && <div className='flex justify-between'>
                       <div>History List</div>
                       <div onClick={deleteHistory}>Clear</div>
                     </div>
