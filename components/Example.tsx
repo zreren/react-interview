@@ -28,7 +28,7 @@ export default function Example() {
   const query = React.useMemo(() => rawQuery.toLowerCase().replace(/^[#>]/, ''), [rawQuery])
 
   // useSWR 自带防抖
-  const { data: searchResult } = useSwr(query ? `/api/search?q=${query}` : null, (url) => fetch(url).then((res) => res.json()), {
+  const { data: searchResult, isValidating } = useSwr(query ? `/api/search?q=${query}` : null, (url) => fetch(url).then((res) => res.json()), {
     dedupingInterval: 300,
   })
 
@@ -122,33 +122,15 @@ export default function Example() {
                 </h2>
                 {
                   query === '' ? (
-                    searchHistory.length > 0 ? searchHistory?.map((search: string, index: number) => (
-                      <Transition.Child
-                        key={index}
-                        enter="transition ease-out duration-100"
-                        enterFrom="opacity-0 transform scale-90"
-                        enterTo="opacity-100 transform scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="opacity-100 transform scale-100"
-                        leaveTo="opacity-0 transform scale-90"
-                      >
-                        <HistoryItem search={search} key={index} index={index}></HistoryItem>
-                      </Transition.Child>
-                    )) : <span className='flex justify-center text-gray-200 text-sm h-5'>no history yet</span>
+                    searchHistory?.length > 0 ? searchHistory?.map((search: string, index: number) => (
+                      <HistoryItem search={search} key={index} index={index}></HistoryItem>
+                    )) : <span className='flex justify-center text-gray-200 text-sm h-10 items-center'>No history yet</span>
                   ) : (
-                    searchResult?.items?.map((item: Repository, index: number) => (
-                      <Transition.Child
-                        key={index}
-                        enter="transition ease-out duration-100"
-                        enterFrom="opacity-0 transform scale-90"
-                        enterTo="opacity-100 transform scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="opacity-100 transform scale-100"
-                        leaveTo="opacity-0 transform scale-90"
-                      >
-                        <RepositoryOption key={index} query={query} {...item} />
-                      </Transition.Child>
-                    ))
+                    searchResult?.items ? searchResult?.items?.map((item: Repository, index: number) => (
+                      <RepositoryOption key={index} query={query} {...item} />
+                    )) : (
+                      isValidating ? <span className='flex justify-center items-center  h-10'>Loading...</span> : <span className='flex items-center justify-center h-10'>No results found</span>
+                    )
                   )
                 }
                 <span className="flex flex-wrap items-center bg-slate-900/20 py-2.5 px-4 text-xs text-gray-400">
