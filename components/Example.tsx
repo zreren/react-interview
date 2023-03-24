@@ -3,7 +3,7 @@ import { Combobox, Dialog, Transition } from '@headlessui/react'
 import { RepositoryOption } from './RepositoryOption'
 import { FaceSmileIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import useSwr from "swr";
-import {Repository} from '../types/api.type';
+import {APIResponse} from '../types/api.type';
 import { useRouter } from 'next/router';
 import { SearchResults,SearchHeader } from './SearchResult';
 import { highlightMatchedText } from '../lib/highlightMatchedText';
@@ -90,11 +90,11 @@ export default function Example() {
           <Transition.Child
             as={React.Fragment}
             enter="transition-transform duration-300 ease-out"
-            enterFrom="opacity-0 scale-95 -translate-y-full"
-            enterTo="opacity-100 scale-100 translate-y-0"
+            enterFrom="opacity-0 scale-95 "
+            enterTo="opacity-100 scale-100 "
             leave="transition-transform duration-200 ease-in"
-            leaveFrom="opacity-100 scale-100 translate-y-0"
-            leaveTo="opacity-0 scale-95 -translate-y-full"
+            leaveFrom="opacity-100 scale-100 t"
+            leaveTo="opacity-0 scale-95 "
           >
             <Dialog.Panel className="mx-auto max-w-xl transform divide-y divide-gray-500 divide-opacity-20 overflow-hidden rounded-2xl shadow-slate-300/10 bg-slate-900/70 shadow-2xl ring-1 ring-sky-500 ring-opacity-5 backdrop-blur-xl backdrop-filter transition-all">
               <Combobox

@@ -14,5 +14,5 @@ type Repository = {
         avatar_url: string
     }
 }
-type APIResponse = { items: Repository[] | null | undefined }
+type APIResponse = { items: Repository[]   }
 export type  {Repository, APIResponse}
