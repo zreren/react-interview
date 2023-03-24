@@ -142,7 +142,7 @@ const RepositoryOptions = ({
       >
         {searchResult?.items?.length ? (
           searchResult?.items?.map((repository, index) => (
-            <RepositoryOption query={query} {...repository} />
+            <RepositoryOption key={index} query={query} {...repository} />
           ))
         ) : <span className="flex h-10 animate-pulse items-center justify-center">
         No Results Found

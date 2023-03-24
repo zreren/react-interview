@@ -7,6 +7,7 @@ import {APIResponse} from '../types/api.type';
 import { useRouter } from 'next/router';
 import { SearchResults,SearchHeader } from './SearchResult';
 import { highlightMatchedText } from '../lib/highlightMatchedText';
+import { useDebounce } from 'use-debounce'
 
 
 
@@ -33,10 +34,11 @@ export default function Example() {
   const [rawQuery, setRawQuery] = React.useState('')
 
   const query = React.useMemo(() => rawQuery.toLowerCase().replace(/^[#>]/, ''), [rawQuery])
+  const [debouncedQuery] = useDebounce(query, 500) // 500ms 防抖
 
   // useSWR 自带防抖
-  const { data: searchResult, isValidating } = useSwr<APIResponse>(query ? `/api/search?q=${query}` : null, (url) => fetch(url).then((res) => res.json()), {
-    dedupingInterval: 300,
+  const { data: searchResult, isValidating } = useSwr<APIResponse>(debouncedQuery ? `/api/search?q=${debouncedQuery}` : null, (url) => fetch(url).then((res) => res.json()), {
+    dedupingInterval: 2000,
   })
 
 
@@ -57,7 +59,7 @@ export default function Example() {
         setSearchHistory(newSearchHistory);
       }
     }
-  }, [query, searchHistory]);
+  }, [debouncedQuery, searchHistory]);
 
 
   const deleteHistory = () => {
