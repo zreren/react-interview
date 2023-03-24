@@ -90,6 +90,10 @@ export default function Example() {
               <Combobox
                 value=""
                 onChange={(item) => {
+                  if (query === '') {
+                    setRawQuery(item)
+                    return
+                  }
                   window.open(item, '_blank')
                 }}
               >
@@ -101,6 +105,7 @@ export default function Example() {
                   <Combobox.Input
                     className="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-100 placeholder-gray-500 focus:ring-0 sm:text-sm focus:outline-0"
                     placeholder="Search GitHub repos..."
+                    value={rawQuery}
                     onChange={(event) => setRawQuery(event.target.value)}
                   />
                 </div>
