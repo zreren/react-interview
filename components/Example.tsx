@@ -44,8 +44,9 @@ export default function Example() {
   // update
   React.useEffect(() => {
     if (query && !searchHistory.includes(query)) {
-      const newSearchHistory = [query, ...searchHistory].slice(0, 5);
-      setSearchHistory(newSearchHistory);
+      const newSearchHistory = [query, ...searchHistory]
+        .filter((search: string, index: number, arr: string[]) => arr.indexOf(search) === index)
+        .slice(0, 5);
       window.localStorage.setItem('searchHistory', JSON.stringify(newSearchHistory));
     }
   }, [query, searchHistory]);
@@ -121,16 +122,35 @@ export default function Example() {
                 </h2>
                 {
                   query === '' ? (
-                    searchHistory?.map((search: string, index: number) => (
-                      <HistoryItem search={search} key={index} index={index}></HistoryItem>
-                    ))
+                    searchHistory.length > 0 ? searchHistory?.map((search: string, index: number) => (
+                      <Transition.Child
+                        key={index}
+                        enter="transition ease-out duration-100"
+                        enterFrom="opacity-0 transform scale-90"
+                        enterTo="opacity-100 transform scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="opacity-100 transform scale-100"
+                        leaveTo="opacity-0 transform scale-90"
+                      >
+                        <HistoryItem search={search} key={index} index={index}></HistoryItem>
+                      </Transition.Child>
+                    )) : <span className='flex justify-center text-gray-200 text-sm h-5'>no history yet</span>
                   ) : (
                     searchResult?.items?.map((item: Repository, index: number) => (
-                      <RepositoryOption key={index} query={query} {...item} />
+                      <Transition.Child
+                        key={index}
+                        enter="transition ease-out duration-100"
+                        enterFrom="opacity-0 transform scale-90"
+                        enterTo="opacity-100 transform scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="opacity-100 transform scale-100"
+                        leaveTo="opacity-0 transform scale-90"
+                      >
+                        <RepositoryOption key={index} query={query} {...item} />
+                      </Transition.Child>
                     ))
                   )
                 }
-
                 <span className="flex flex-wrap items-center bg-slate-900/20 py-2.5 px-4 text-xs text-gray-400">
                   <FaceSmileIcon className="w-4 h-4 mr-1" />
                   Welcome to Zolplay&apos;s React Interview Challenge.
