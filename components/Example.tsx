@@ -50,6 +50,10 @@ export default function Example() {
     }
   }, [query, searchHistory]);
 
+  const deleteHistory = () => {
+    setSearchHistory([]);
+    window.localStorage.setItem('searchHistory', JSON.stringify([]));
+  }
 
   return (
     <Transition.Root
@@ -104,9 +108,15 @@ export default function Example() {
                     onChange={(event) => setRawQuery(event.target.value)}
                   />
                 </div>
-                <h2 className="text-xs font-semibold text-gray-200 px-2 py-2">
+                <h2 className="text-xs font-semibold text-gray-200 px-4 py-4">
                   {
-                    query === '' ? 'Recent list' : 'Repositories'
+                    query === '' && 'Repositories'
+                  }
+                  {
+                    query !== '' && <div className='flex justify-between'>
+                      <div>History List</div>
+                      <div onClick={deleteHistory}>Clear</div>
+                    </div>
                   }
                 </h2>
                 {
