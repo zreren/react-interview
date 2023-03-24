@@ -1,13 +1,13 @@
 import React from 'react'
 import { Combobox, Dialog, Transition } from '@headlessui/react'
 import { RepositoryOption } from './RepositoryOption'
-import { FaceSmileIcon, MagnifyingGlassIcon, TrashIcon } from '@heroicons/react/20/solid'
+import { FaceSmileIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import useSwr from "swr";
 import Repository from '../types/api.type';
 import { useRouter } from 'next/router';
+import { SearchResults,SearchHeader } from './SearchResult';
 import { highlightMatchedText } from '../lib/highlightMatchedText';
-import HistoryItem from './history';
-import LoadingIcon from './loadingIcon'
+
 
 type APIResponse = { items: Repository[] }
 
@@ -59,10 +59,12 @@ export default function Example() {
     }
   }, [query, searchHistory]);
 
+
   const deleteHistory = () => {
     setSearchHistory([]);
     window.localStorage.setItem('searchHistory', JSON.stringify([]));
   }
+
 
   return (
     <Transition.Root
@@ -117,30 +119,8 @@ export default function Example() {
                     onChange={(event) => setRawQuery(event.target.value)}
                   />
                 </div>
-                <h2 className="text-xs font-semibold text-gray-200 px-4 py-4">
-                  {
-                    query !== '' && 'Repositories'
-                  }
-                  {
-                    query === '' && <div className='flex justify-between items-center'>
-                      <div>History List</div>
-                      <TrashIcon className='h-4 w-4 cursor-pointer' onClick={deleteHistory}></TrashIcon>
-                    </div>
-                  }
-                </h2>
-                {
-                  query === '' ? (
-                    searchHistory ? searchHistory?.map((search: string, index: number) => (
-                      <HistoryItem search={search} key={index} index={index}></HistoryItem>
-                    )) : <span className='flex justify-center text-gray-200 text-sm h-10 items-center'>No History Yet</span>
-                  ) : (
-                    searchResult?.items ? searchResult?.items?.map((item: Repository, index: number) => (
-                      <RepositoryOption key={index} query={query} {...item} />
-                    )) : (
-                      isValidating ? <LoadingIcon></LoadingIcon> : <span className='flex items-center justify-center h-10'>No Results Found</span>
-                    )
-                  )
-                }
+                <SearchHeader query={query} onClick={deleteHistory}></SearchHeader>
+                <SearchResults query={query} searchHistory={searchHistory} searchResult={searchResult} isValidating={isValidating} />
                 <span className="flex flex-wrap items-center bg-slate-900/20 py-2.5 px-4 text-xs text-gray-400">
                   <FaceSmileIcon className="w-4 h-4 mr-1" />
                   Welcome to Zolplay&apos;s React Interview Challenge.
