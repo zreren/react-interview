@@ -47,6 +47,8 @@ export function RepositoryOption(props: RepositoryOptionType) {
                 <span className="w-4 h-4 rounded-full overflow-hidden">
                   <Image
                     src={owner.avatar_url}
+                    placeholder='blur'
+                    blurDataURL={owner.avatar_url}
                     alt="User Avatar"
                     width={100}
                     height={100}

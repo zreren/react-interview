@@ -1,7 +1,7 @@
 import React from 'react'
 import { Combobox, Dialog, Transition } from '@headlessui/react'
 import { RepositoryOption } from './RepositoryOption'
-import { FaceSmileIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import { FaceSmileIcon, MagnifyingGlassIcon, TrashIcon } from '@heroicons/react/20/solid'
 import useSwr from "swr";
 import Repository from '../types/api.type';
 import { useRouter } from 'next/router';
@@ -17,12 +17,18 @@ export default function Example() {
   const router = useRouter();
 
   React.useEffect(() => {
-    if (!open) {
-      setTimeout(() => {
-        setOpen(true)
-      }, 500)
-    }
-  }, [open])
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && ['K', 'k'].includes(event.key)) {
+        setOpen(true);
+      }
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, []);
 
   const [rawQuery, setRawQuery] = React.useState('')
 
@@ -34,21 +40,22 @@ export default function Example() {
   })
 
 
-  // client 存储本地
-  const [searchHistory, setSearchHistory] = React.useState(() => {
+  const [searchHistory, setSearchHistory] = React.useState<string[]>(() => {
     const storedHistory =
       typeof window !== 'undefined' ? window.localStorage.getItem('searchHistory') : null;
-    return storedHistory ? JSON.parse(storedHistory) : [];
+    // Check if the stored history is not null and not an empty array before parsing
+    return storedHistory && storedHistory.length ? JSON.parse(storedHistory) : [];
   });
 
-
-  // update
   React.useEffect(() => {
     if (query && !searchHistory.includes(query)) {
-      const newSearchHistory = [query, ...searchHistory]
-        .filter((search: string, index: number, arr: string[]) => arr.indexOf(search) === index)
-        .slice(0, 5);
-      window.localStorage.setItem('searchHistory', JSON.stringify(newSearchHistory));
+      const newSearchHistory = [query, ...searchHistory.filter(item => item !== query)].slice(0, 5);
+      // Check if the new search history is different from the existing one before updating the local storage
+      if (JSON.stringify(newSearchHistory) !== JSON.stringify(searchHistory)) {
+        window.localStorage.setItem('searchHistory', JSON.stringify(newSearchHistory));
+        // Set the new search history in state only if it is different from the existing one
+        setSearchHistory(newSearchHistory);
+      }
     }
   }, [query, searchHistory]);
 
@@ -115,15 +122,15 @@ export default function Example() {
                     query !== '' && 'Repositories'
                   }
                   {
-                    query === '' && <div className='flex justify-between'>
+                    query === '' && <div className='flex justify-between items-center'>
                       <div>History List</div>
-                      <div onClick={deleteHistory}>Clear</div>
+                      <TrashIcon className='h-4 w-4 cursor-pointer' onClick={deleteHistory}></TrashIcon>
                     </div>
                   }
                 </h2>
                 {
                   query === '' ? (
-                    searchHistory?.length > 0 ? searchHistory?.map((search: string, index: number) => (
+                    searchHistory ? searchHistory?.map((search: string, index: number) => (
                       <HistoryItem search={search} key={index} index={index}></HistoryItem>
                     )) : <span className='flex justify-center text-gray-200 text-sm h-10 items-center'>No History Yet</span>
                   ) : (
