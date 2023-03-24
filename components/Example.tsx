@@ -7,6 +7,7 @@ import Repository from '../types/api.type';
 import { useRouter } from 'next/router';
 import { highlightMatchedText } from '../lib/highlightMatchedText';
 import HistoryItem from './history';
+import LoadingIcon from './loadingIcon'
 
 type APIResponse = { items: Repository[] }
 
@@ -124,12 +125,12 @@ export default function Example() {
                   query === '' ? (
                     searchHistory?.length > 0 ? searchHistory?.map((search: string, index: number) => (
                       <HistoryItem search={search} key={index} index={index}></HistoryItem>
-                    )) : <span className='flex justify-center text-gray-200 text-sm h-10 items-center'>No history yet</span>
+                    )) : <span className='flex justify-center text-gray-200 text-sm h-10 items-center'>No History Yet</span>
                   ) : (
                     searchResult?.items ? searchResult?.items?.map((item: Repository, index: number) => (
                       <RepositoryOption key={index} query={query} {...item} />
                     )) : (
-                      isValidating ? <span className='flex justify-center items-center  h-10'>Loading...</span> : <span className='flex items-center justify-center h-10'>No results found</span>
+                      isValidating ? <LoadingIcon></LoadingIcon> : <span className='flex items-center justify-center h-10'>No Results Found</span>
                     )
                   )
                 }
