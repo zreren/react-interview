@@ -1,5 +1,5 @@
 
-interface Repository {
+type Repository = {
     id: string
     name: string
     full_name: string
@@ -14,4 +14,5 @@ interface Repository {
         avatar_url: string
     }
 }
-export default Repository
+type APIResponse = { items: Repository[] | null | undefined }
+export type  {Repository, APIResponse}

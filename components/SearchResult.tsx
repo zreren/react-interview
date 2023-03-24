@@ -1,4 +1,4 @@
-import type  Repository  from '../types/api.type'
+import type  {Repository,APIResponse}  from '../types/api.type'
 import HistoryItem from './History';
 import LoadingIcon from './LoadingIcon';
 import { RepositoryOption } from './RepositoryOption';
@@ -8,9 +8,7 @@ import { MouseEventHandler } from 'react';
 interface SearchResultsProps {
   query: string;
   searchHistory: string[];
-  searchResult: {
-    items: Repository[];
-  } | null;
+  searchResult: APIResponse;
   isValidating: boolean;
 }
 
@@ -19,9 +17,7 @@ interface SearchHistoryProps {
 }
 
 interface RepositoryOptionsProps {
-  searchResult: {
-    items: Repository[];
-  } | null;
+  searchResult: APIResponse;
   isValidating: boolean;
   query: string;
 }

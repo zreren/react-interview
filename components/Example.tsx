@@ -3,13 +3,13 @@ import { Combobox, Dialog, Transition } from '@headlessui/react'
 import { RepositoryOption } from './RepositoryOption'
 import { FaceSmileIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import useSwr from "swr";
-import Repository from '../types/api.type';
+import {Repository} from '../types/api.type';
 import { useRouter } from 'next/router';
 import { SearchResults,SearchHeader } from './SearchResult';
 import { highlightMatchedText } from '../lib/highlightMatchedText';
 
 
-type APIResponse = { items: Repository[] }
+
 
 export default function Example() {
   const [open, setOpen] = React.useState(true)
@@ -35,7 +35,7 @@ export default function Example() {
   const query = React.useMemo(() => rawQuery.toLowerCase().replace(/^[#>]/, ''), [rawQuery])
 
   // useSWR 自带防抖
-  const { data: searchResult, isValidating } = useSwr(query ? `/api/search?q=${query}` : null, (url) => fetch(url).then((res) => res.json()), {
+  const { data: searchResult, isValidating } = useSwr<APIResponse>(query ? `/api/search?q=${query}` : null, (url) => fetch(url).then((res) => res.json()), {
     dedupingInterval: 300,
   })
 
