@@ -36,7 +36,6 @@ export default function Example() {
   const query = React.useMemo(() => rawQuery.toLowerCase().replace(/^[#>]/, ''), [rawQuery])
   const [debouncedQuery] = useDebounce(query, 500) // 500ms 防抖
 
-  // useSWR 自带防抖
   const { data: searchResult, isValidating } = useSwr<APIResponse>(debouncedQuery ? `/api/search?q=${debouncedQuery}` : null, (url) => fetch(url).then((res) => res.json()), {
     dedupingInterval: 2000,
   })

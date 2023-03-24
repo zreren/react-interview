@@ -6,8 +6,8 @@ import {
   CpuChipIcon,
   StarIcon,
   ViewfinderCircleIcon,
-} from '@heroicons/react/24/outline'
-import Repository from '../types/api.type'
+} from '@heroicons/react/24/outline';
+import {Repository} from '../types/api.type';
 import { highlightMatchedText } from '../lib/highlightMatchedText';
 
 interface RepositoryOptionType extends Repository {
