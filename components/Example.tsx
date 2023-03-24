@@ -104,15 +104,11 @@ export default function Example() {
                     onChange={(event) => setRawQuery(event.target.value)}
                   />
                 </div>
-                <li>
-                  <h2 className="text-xs font-semibold text-gray-200">
-                    Repositories
-                  </h2>
-                  <ul className="-mx-4 mt-2 text-sm text-gray-700 space-y-0.5">
-                  </ul>
-                </li>
-
-
+                <h2 className="text-xs font-semibold text-gray-200 px-2 py-2">
+                  {
+                    query === '' ? 'Recent list' : 'Repositories'
+                  }
+                </h2>
                 {
                   query === '' ? (
                     searchHistory?.map((search: string, index: number) => (
