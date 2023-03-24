@@ -2,26 +2,23 @@ import React from 'react'
 import { Combobox, Dialog, Transition } from '@headlessui/react'
 import { RepositoryOption } from './RepositoryOption'
 import { FaceSmileIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
-
-type Repository = {
-  id: string
-  name: string
-  full_name: string
-  open_issues_count: number
-  stargazers_count: number
-  forks_count: number
-  url: string
-  language: string
-  owner: {
-    login: string
-    avatar_url: string
-  }
-}
+import useSwr from "swr";
+import Repository from '../types/api.type';
+import { useRouter } from 'next/router';
+import { highlightMatchedText } from '../lib/highlightMatchedText';
+import {
+  CpuChipIcon,
+  StarIcon,
+  ViewfinderCircleIcon,
+} from '@heroicons/react/24/outline'
+import { classNames } from '../lib/utils'
 
 type APIResponse = { items: Repository[] }
 
 export default function Example() {
   const [open, setOpen] = React.useState(true)
+
+  const router = useRouter();
 
   React.useEffect(() => {
     if (!open) {
@@ -32,7 +29,32 @@ export default function Example() {
   }, [open])
 
   const [rawQuery, setRawQuery] = React.useState('')
-  const query = rawQuery.toLowerCase().replace(/^[#>]/, '')
+
+  const query = React.useMemo(() => rawQuery.toLowerCase().replace(/^[#>]/, ''), [rawQuery])
+
+  // useSWR 自带防抖
+  const { data: searchResult } = useSwr(query ? `/api/search?q=${query}` : null, (url) => fetch(url).then((res) => res.json()), {
+    dedupingInterval: 300,
+  })
+
+
+  // client 存储本地
+  const [searchHistory, setSearchHistory] = React.useState(() => {
+    const storedHistory =
+      typeof window !== 'undefined' ? window.localStorage.getItem('searchHistory') : null;
+    return storedHistory ? JSON.parse(storedHistory) : [];
+  });
+
+
+  // update
+  React.useEffect(() => {
+    if (query && !searchHistory.includes(query)) {
+      const newSearchHistory = [query, ...searchHistory].slice(0, 5);
+      setSearchHistory(newSearchHistory);
+      window.localStorage.setItem('searchHistory', JSON.stringify(newSearchHistory));
+    }
+  }, [query, searchHistory]);
+
 
   return (
     <Transition.Root
@@ -68,7 +90,7 @@ export default function Example() {
               <Combobox
                 value=""
                 onChange={(item) => {
-                  console.info('You have selected', item)
+                  window.open(item, '_blank')
                 }}
               >
                 <div className="relative">
@@ -82,22 +104,49 @@ export default function Example() {
                     onChange={(event) => setRawQuery(event.target.value)}
                   />
                 </div>
+                <li>
+                  <h2 className="text-xs font-semibold text-gray-200">
+                    Repositories
+                  </h2>
+                  <ul className="-mx-4 mt-2 text-sm text-gray-700 space-y-0.5">
+                  </ul>
+                </li>
 
-                <Combobox.Options
-                  static
-                  className="max-h-80 scroll-py-10 scroll-pb-2 space-y-4 overflow-y-auto p-4 pb-2"
-                >
-                  <li>
-                    <h2 className="text-xs font-semibold text-gray-200">
-                      Repositories
-                    </h2>
-                    <ul className="-mx-4 mt-2 text-sm text-gray-700 space-y-0.5">
-                      <RepositoryOption />
-                      <RepositoryOption />
-                      <RepositoryOption />
-                    </ul>
-                  </li>
-                </Combobox.Options>
+
+                {
+                  query === '' ? (
+                    searchHistory?.map((search: string, index: number) => (
+                      <Combobox.Option
+                        key={index}
+                        value={search}
+                        className={({ active }) =>
+                          classNames(
+                            'flex flex-col cursor-default select-none justify-center px-4 py-2 space-y-1.5',
+                            active ? 'bg-indigo-300/20 text-white' : 'text-gray-300'
+                          )
+                        }
+                      >
+                        {({ active }) => (
+                          <header className="flex items-center">
+                            <CpuChipIcon
+                              className={(classNames(
+                                'h-5 w-5 flex-none',
+                                active ? 'text-white' : 'text-gray-200'
+                              ))}
+                              aria-hidden="true"
+                            />
+                            {search}
+                          </header>
+                        )}
+                      </Combobox.Option>
+                    ))
+                  ) : (
+                    searchResult?.items?.map((item: Repository, index: number) => (
+                      <RepositoryOption key={index} query={query} {...item} />
+                    ))
+                  )
+                }
+
                 <span className="flex flex-wrap items-center bg-slate-900/20 py-2.5 px-4 text-xs text-gray-400">
                   <FaceSmileIcon className="w-4 h-4 mr-1" />
                   Welcome to Zolplay&apos;s React Interview Challenge.

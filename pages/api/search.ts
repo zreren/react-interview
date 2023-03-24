@@ -20,6 +20,7 @@ export default async function handler(
     q,
     per_page: '20',
   }).toString()
+  
   const apiResponse = await fetch(`${searchRelayUrl}?${params}`)
 
   try {
