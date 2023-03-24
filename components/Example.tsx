@@ -122,7 +122,7 @@ export default function Example() {
                 {
                   query === '' ? (
                     searchHistory?.map((search: string, index: number) => (
-                      <HistoryItem search={search} index={index}></HistoryItem>
+                      <HistoryItem search={search} key={index} index={index}></HistoryItem>
                     ))
                   ) : (
                     searchResult?.items?.map((item: Repository, index: number) => (
