@@ -78,7 +78,7 @@ export const SearchHeader = ({
 const SearchHistory = ({ searchHistory }: SearchHistoryProps) => {
   return (
     <div>
-      {searchHistory ? (
+      {searchHistory?.length > 0 ? (
         searchHistory.map((searchQuery, index) => (
           <HistoryItem key={index} index={index} search={searchQuery} />
         ))
