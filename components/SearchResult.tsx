@@ -92,27 +92,24 @@ const RepositoryOptions = ({
 }: RepositoryOptionsProps) => {
 
 
-
+  const transitions = useTransition(true, {
+    from: { opacity: 0, transform: 'translateX(8px)' },
+    enter: { opacity: 1, transform: 'translateX(0)' },
+    leave: { opacity: 0 },
+    delay:50,
+    config: {
+      mass: 10,
+      friction: 5,
+      tension: 10,
+      duration: 100,
+    },
+  })
 
   if (!searchResult?.items && isValidating) {
-    const [open, setOpen] = React.useState(true)
-    
-    const transitions = useTransition(open, {
-      from: { opacity: 0 },
-      enter: { opacity: 1 },
-      leave: { opacity: 0 },
-      reverse: open,
-      config: {
-        mass: 10,
-        friction: 5,
-        tension: 10,
-        duration: 200,
-      },
-    })
     return transitions(
       (style, item) =>
         item && (
-          <animated.div style={style}>
+          <animated.div style={style} className="animate-pulse">
             <LoadingIcon />
           </animated.div>
         )
@@ -120,19 +117,6 @@ const RepositoryOptions = ({
   }
 
   const NoResult = () => {
-    const [open, setOpen] = React.useState(true)
-    const transitions = useTransition(open, {
-      from: { opacity: 0 },
-      enter: { opacity: 1 },
-      leave: { opacity: 0 },
-      reverse: open,
-      config: {
-        mass: 10,
-        friction: 5,
-        tension: 10,
-        duration: 200,
-      },
-    })
     return transitions(
       (style, item) =>
         item && (

@@ -8,7 +8,7 @@ html, body {
 
 
 .animate-pulse {
-  animation-duration: 0.5s;
+  animation-duration: 1s;
   animation-fill-mode: both;
   animation-iteration-count:1;
   animation-name: pulse;
