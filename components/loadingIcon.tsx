@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
+import { SpringValue } from "@react-spring/web";
 
+
+
+
+  
 const Loading = () => {
     const [dots, setDots] = useState("");
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setDots((dots) => (dots.length >= 3 ? "" : dots + "."));
-        }, 500);
 
-        return () => clearInterval(interval);
-    }, []);
 
     return (
         <div className="flex justify-center items-center space-x-3 h-10">
