@@ -96,6 +96,7 @@ const RepositoryOptions = ({
 
   if (!searchResult?.items && isValidating) {
     const [open, setOpen] = React.useState(true)
+    
     const transitions = useTransition(open, {
       from: { opacity: 0 },
       enter: { opacity: 1 },
