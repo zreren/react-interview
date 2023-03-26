@@ -15,6 +15,7 @@ interface RepositoryOptionType extends Repository {
   query: string
 }
 
+/**搜索选项列表 */
 export function RepositoryOption(props: RepositoryOptionType) {
   const {
     name,

@@ -6,7 +6,7 @@ import { TrashIcon } from '@heroicons/react/20/solid'
 import { MouseEventHandler, useCallback, useEffect, useState } from 'react'
 import { Combobox, Dialog, Transition } from '@headlessui/react'
 import React, { Fragment, useRef } from 'react'
-import { Spring, animated, useTransition } from '@react-spring/web'
+import { Spring, animated, useTransition, config } from '@react-spring/web'
 
 interface SearchResultsProps {
   query: string
@@ -25,28 +25,7 @@ interface RepositoryOptionsProps {
   query: string
 }
 
-export const SearchResults = ({
-  query,
-  searchHistory,
-  searchResult,
-  isValidating,
-}: SearchResultsProps) => {
-  return (
-    <div>
-      {query === '' ? (
-        <SearchHistory searchHistory={searchHistory} />
-      ) : (
-        <RepositoryOptions
-          searchResult={searchResult}
-          isValidating={isValidating}
-          query={query}
-        />
-      )}
-    </div>
-  )
-}
-
-export const SearchHeader = ({
+const SearchHeader = ({
   query,
   onClick,
 }: {
@@ -69,19 +48,83 @@ export const SearchHeader = ({
     </h2>
   )
 }
+
 const SearchHistory = ({ searchHistory }: SearchHistoryProps) => {
+  
+  const [open, setOpen] = useState(true)
+  const DURATION = 400;
+  const delayedSetOpen = useCallback(
+    (value:boolean) => {
+      const timeoutId = setTimeout(() => {
+        return setOpen(value)
+      }, DURATION);
+      return () => clearTimeout(timeoutId);
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (searchHistory.length > 0) {
+      delayedSetOpen(true);
+    } else {
+      delayedSetOpen(false);
+    }
+  }, [searchHistory, delayedSetOpen]);
+
+
+
+  const transitions = useTransition(searchHistory, {
+    from: { opacity: 1 },
+    enter: { opacity: 1, height: '44px' },
+    keys: (item) => item,
+    leave: { opacity: 0.01, height: '0px' },
+    config: {
+      ...config.default,
+      tension: 20,
+      mass: 10,
+      friction: 200,
+      duration: DURATION,
+    },
+  })
+  const transitionsState = useTransition(open, {
+    from: { opacity: 0, height: '0px' },
+    enter: { opacity: 1, height: '44px' },
+    config: {
+      mass: 10,
+      friction: 5,
+      tension: 10,
+      duration: DURATION
+    },
+  })
+
+  if (!open) {
+    return (
+       <>
+        {
+          transitionsState((style)=>{
+            return (
+              <animated.div style={style}>
+              <span className="flex h-11 items-center justify-center text-sm text-gray-200">
+                No History Yet
+                </span>
+              </animated.div>
+            )
+          })
+        }
+       </>
+    )
+  }
+
   return (
-    <div>
-      {searchHistory?.length > 0 ? (
-        searchHistory.map((searchQuery, index) => (
-          <HistoryItem key={index} index={index} search={searchQuery} />
-        ))
-      ) : (
-        <span className="flex h-10 items-center justify-center text-sm text-gray-200">
-          No History Yet
-        </span>
-      )}
-    </div>
+    <>
+      {transitions((style, item) => {
+        return (
+          <animated.div style={style}>
+            <div>{<HistoryItem key={item} index={item} search={item} />}</div>
+          </animated.div>
+        )
+      })}
+    </>
   )
 }
 
@@ -90,13 +133,11 @@ const RepositoryOptions = ({
   isValidating,
   query,
 }: RepositoryOptionsProps) => {
-
-
   const transitions = useTransition(true, {
     from: { opacity: 0, transform: 'translateX(8px)' },
     enter: { opacity: 1, transform: 'translateX(0)' },
     leave: { opacity: 0 },
-    delay:50,
+    delay: 50,
     config: {
       mass: 10,
       friction: 5,
@@ -122,7 +163,7 @@ const RepositoryOptions = ({
         item && (
           <animated.div style={style}>
             <span className="flex h-10 animate-pulse items-center justify-center">
-               No Results Found 
+              No Results Found
             </span>
           </animated.div>
         )
@@ -146,3 +187,30 @@ const RepositoryOptions = ({
     </div>
   )
 }
+
+const SearchResults = ({
+  query,
+  searchHistory,
+  searchResult,
+  isValidating,
+}: SearchResultsProps) => {
+  return (
+    <div>
+      {query === '' ? (
+        <SearchHistory searchHistory={searchHistory} />
+      ) : (
+        <RepositoryOptions
+          searchResult={searchResult}
+          isValidating={isValidating}
+          query={query}
+        />
+      )}
+    </div>
+  )
+}
+
+const Search = {
+  Header: SearchHeader,
+  Result: SearchResults,
+}
+export default Search

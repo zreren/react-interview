@@ -9,7 +9,7 @@ import {
 
 interface HistoryItemProps {
     search: string
-    index: number
+    index: number | string
 }
 
 const historyItem = (props: HistoryItemProps) => {
@@ -20,7 +20,7 @@ const historyItem = (props: HistoryItemProps) => {
             value={search}
             className={({ active }) =>
                 classNames(
-                    'flex flex-col cursor-default select-none justify-center px-4 py-2 space-y-1.5',
+                    'flex flex-col cursor-default select-none justify-center px-4 py-3 space-y-1.5',
                     active ? 'bg-indigo-300/20 text-white' : 'text-gray-300'
                 )
             }

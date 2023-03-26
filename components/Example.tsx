@@ -1,21 +1,18 @@
 import React from 'react'
 import { Combobox, Dialog, Transition } from '@headlessui/react'
-import { RepositoryOption } from './RepositoryOption'
 import { FaceSmileIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import useSwr from "swr";
 import {APIResponse} from '../types/api.type';
 import { useRouter } from 'next/router';
-import { SearchResults,SearchHeader } from './SearchResult';
-import { highlightMatchedText } from '../lib/highlightMatchedText';
+import Search from './SearchResult';
 import { useDebounce } from 'use-debounce'
 
 
 
-
 export default function Example() {
+
   const [open, setOpen] = React.useState(true)
 
-  const router = useRouter();
 
   React.useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -23,18 +20,17 @@ export default function Example() {
         setOpen(true);
       }
     };
-
     document.addEventListener('keydown', onKeyDown);
-
     return () => {
       document.removeEventListener('keydown', onKeyDown);
     };
   }, []);
 
-  const [rawQuery, setRawQuery] = React.useState('')
 
+  const [rawQuery, setRawQuery] = React.useState('')
   const query = React.useMemo(() => rawQuery.toLowerCase().replace(/^[#>]/, ''), [rawQuery])
-  const [debouncedQuery] = useDebounce(query, 500) // 500ms 防抖
+  const [debouncedQuery] = useDebounce(query, 500) // 500ms Debounce
+
 
   const { data: searchResult, isValidating } = useSwr<APIResponse>(debouncedQuery ? `/api/search?q=${debouncedQuery}` : null, (url) => fetch(url).then((res) => res.json()), {
     dedupingInterval: 2000,
@@ -44,17 +40,15 @@ export default function Example() {
   const [searchHistory, setSearchHistory] = React.useState<string[]>(() => {
     const storedHistory =
       typeof window !== 'undefined' ? window.localStorage.getItem('searchHistory') : null;
-    // Check if the stored history is not null and not an empty array before parsing
     return storedHistory && storedHistory.length ? JSON.parse(storedHistory) : [];
   });
+
 
   React.useEffect(() => {
     if (query && !searchHistory.includes(query)) {
       const newSearchHistory = [query, ...searchHistory.filter(item => item !== query)].slice(0, 5);
-      // Check if the new search history is different from the existing one before updating the local storage
       if (JSON.stringify(newSearchHistory) !== JSON.stringify(searchHistory)) {
         window.localStorage.setItem('searchHistory', JSON.stringify(newSearchHistory));
-        // Set the new search history in state only if it is different from the existing one
         setSearchHistory(newSearchHistory);
       }
     }
@@ -120,8 +114,10 @@ export default function Example() {
                     onChange={(event) => setRawQuery(event.target.value)}
                   />
                 </div>
-                <SearchHeader query={query} onClick={deleteHistory}></SearchHeader>
-                <SearchResults query={query} searchHistory={searchHistory} searchResult={searchResult} isValidating={isValidating} />
+                {/* 搜索Header */}
+                <Search.Header query={query} onClick={deleteHistory}></Search.Header>
+                {/* 搜索结果 && 历史记录 */}
+                <Search.Result query={query} searchHistory={searchHistory} searchResult={searchResult} isValidating={isValidating} />
                 <span className="flex flex-wrap items-center bg-slate-900/20 py-2.5 px-4 text-xs text-gray-400">
                   <FaceSmileIcon className="w-4 h-4 mr-1" />
                   Welcome to Zolplay&apos;s React Interview Challenge.
